@@ -1,0 +1,156 @@
+// Copyright (c) 2019, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+//importação dos widgets do 'material design' do Google
+import 'package:flutter/material.dart';
+
+//Método main - retorna o runApp para rodar
+//o aplicativo
+void main() => runApp(MyApp());
+
+//A classe 'principal', primeira e responsável
+//por algumas definições do projeto, além
+//de chamar as outra clases e tal
+
+//Repare que ela é StatelessWidget
+
+class MyApp extends StatelessWidget {
+  //Tanto em classes Stateless quando Statefull, devemos
+  //Sobrescrever o método de build do Widget, a diferença
+  //é que ::
+  // ---- Quando NÃO tem estado, o fazemos direto na classe.
+  // ---- Quando TEM estado, isso é feito na subclasse privada.
+
+  //O BuildContext que recebemos como parâmetro serve para um
+  //controle interno do Flutter, 'não precisamos' nos preocupar
+  //com isso.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      //Título do APP
+      title: 'Flutter Demo',
+
+      //É uma flag que mostra ou não
+      //uma bandeirinha informando se o app
+      //está em modo de debug ou não.
+      debugShowCheckedModeBanner: false,
+
+      //ThemeData é mais ou menos como uma
+      //configuração padronizada de configurações
+      //visuais para o app, onde caso um widget
+      //não tenha alguma estilização específica
+      //daqui que ele 'puxa'. Sería como uma estilização
+      //no  na tag 'body' de um css.
+
+      //https://api.flutter.dev/flutter/material/ThemeData-class.html
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+
+      //Chamada e atribuição de telas.
+      home: const MyHomePage(title: 'Página Home Demo do Flutter'),
+    );
+  }
+}
+
+//Classe da tela da Home
+//Como tem um contador, a mesma é uma classe
+//que precisa de estados, por isso é StatefulWidget
+
+class MyHomePage extends StatefulWidget {
+  final String title;
+
+  //Note que no construtor, além do nosso title, temos
+  //também uma key, ela é utilizada no contrutor do Stateful
+
+  const MyHomePage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  //Como é Stateful, temos que sobrescrever o createState
+  //note que antes de chamar o método passamos para o generics
+  //o tipo do estado, neste caso, sendo a nossa própria classe
+
+  //O retorno é a chamada de uma classe privada que tem todo o
+  //gerenciamento de estado e comportamento dos widgets
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+//Classe privada responsável pelo gerenciamento dos widgets e
+//seus estados. Note que ela herda diretamente do State, passando
+//a classe original como tipagem para o Generics do mesmo.
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  //Método que internamente utiliza o controle de estado
+  //para atualizar o valor e também o DISPLAY do elemento
+  //na tela. Sem isso, mesmo que o valor fosse atualizado,
+  //nada ocorreria com o valor original a mostra no dispositivo.
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  //Como exemplificado anteriormente, quando uma classe tem
+  //estado (StatefulWidget), a sobrescrita do build de widget
+  //deve ser realizada na subclasse que controla o estado, que
+  //no caso, é aqui.
+  @override
+  Widget build(BuildContext context) {
+    //'Scaffold' é um conjunto de widgets próprios
+    //do Flutter para o estilo 'Android'.
+    //Para o 'Iphone' seria o 'cupertino'
+
+    //Scaffold  :: https://api.flutter.dev/flutter/material/Scaffold-class.html
+    //Cupertino :: https://docs.flutter.dev/development/ui/widgets/cupertino
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      //Esse Center serve para colocar todos os elementos no meio 
+      //do espaço horizontal disponível. Caso não se queira isso
+      //podemos apenas remover o Center e a sua propriedade
+      //'child', deixando direto o Column/Row 
+      
+      //Para mais detalhes, olhar a doc do Body ::
+      //https://api.flutter.dev/flutter/material/Scaffold/body.html
+      body: Center(
+        child: Column(
+          //No caso do column, o mainAxisAlignment se refere ao 
+          //posicionamento vertical do elemento.
+          //Center : No meio do espaço vertical disponível
+          //Start  : Quanto mais acima estiver diponível
+          //End    : Quanto mais abixo estiver disponível      
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              //O Theme.of serve para se referir diretamente ao já citado
+              //Theme:ThemeData(...)
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
+        ),
+      ),
+      
+      //Como podemos notar, o floatingActionButton NÃO está 
+      //contigo dentro do body, isso ocorre pois o mesmo 
+      //não está na mesma 'altura de renderização', estando mais
+      //alto, é basicamente como se ele tivesse um 'z-index' maior
+      //que o do Body
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
